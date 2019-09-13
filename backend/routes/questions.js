@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 var fs=require('fs');
-var readJson =fs.readFileSync('quiz.json', 'utf8');
+var readJson =fs.readFileSync('data.json', 'utf8');
 var data=JSON.parse(readJson);
 
 //include the lodash & underscore
@@ -11,6 +11,20 @@ const _ = require('underscore');
 var score = 0;
 
 router.get('/', async (req, res)=>{
+
+  var easyQuestion = data.filter((value)=>{
+    return value.difficulty == 'E'
+     });
+ var mediumQuestion = data.filter((value)=>{
+    return value.difficulty == 'M'
+    });
+ var hardQuestion = data.filter(hardQuestion);
+
+       function hardQuestion(value){
+          return value.difficulty == 'H'
+       }
+
+ var questionbank= _.shuffle(_.union( _.sample(easyQuestion, 5),_.sample(mediumQuestion, 3),_.sample(hardQuestion, 2)))
     const questions = await questionbank;
     res.send(questions)
   });
@@ -38,22 +52,4 @@ router.post('/attempt',async (req, res)=>{
 
 module.exports = router;
 
-
-
-//ES6
-      var easyQuestion = data.filter((value)=>{
-         return value.difficulty == 'E'
-          });
-
-      var mediumQuestion = data.filter((value)=>{
-         return value.difficulty == 'M'
-         });
-
-//ES5
-      var hardQuestion = data.filter(hardQuestion);
-
-            function hardQuestion(value){
-               return value.difficulty == 'H'
-            }
-
-      var questionbank= _.shuffle(_.union( _.sample(easyQuestion, 5),_.sample(mediumQuestion, 3),_.sample(hardQuestion, 2)))
+      
