@@ -8,9 +8,9 @@
         <button v-on:click="start" class="btn btn-primary">Let's get started!!</button><br><br>
     </div>
 
-<div v-show="showQuestion && currentQuestion < datas.length - 1" class="container-fluid">
-  <p id="question">Q{{currentQuestion + 1}} {{datas[currentQuestion].question}}</p>
-  <div v-for="answer in datas[currentQuestion].options">
+<div v-if="showQuestion && currentQuestion < questions.length - 1" class="container-fluid">
+  <p id="question">Q{{currentQuestion + 1}} {{questions[currentQuestion].question}}</p>
+  <div v-for="answer in questions[currentQuestion].options">
      <div class="radio">
       <input type="radio" v-model="Response" name="options" :value="answer.isCorrect" v-on:click="next" :id="answer.id">
       {{answer.option}}
@@ -32,14 +32,13 @@
 
 </template>
 <script>
-import VueResource from 'vue-resource'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'app',
   data(){
     return {
       datas: [],
-      questions:[],
       currentQuestion:0,
       Response:[],
       Score: 0,
@@ -49,12 +48,17 @@ export default {
       show:false
     }
   },
+  computed: mapGetters({
+    questions: 'getAllQuestions',
+    getQuestion: 'getAQuestion'
+  }),
   created(){
-      this.$http.get('http://localhost:8080/api/questions')
+      //this.$store.dispatch('storeQuestions')
+  },
+  beforeMount() {
+    this.$http.get('http://localhost:8080/api/questions')
       .then(response=>{
-        this.datas = response.body;
-        // this.questions = this.datas[this.currentQuestion]
-        // console.log(this.datas[this.currentQuestion].question)
+        this.$store.dispatch('putQuestions', response.data)
         this.startQuiz = true;
       })
   },
@@ -62,6 +66,7 @@ methods:{
   start: function(){
     this.startQuiz = false;
     this.showQuestion = true;
+    console.log(this.getQuestion(3))
   },
 
   prev: function(){
